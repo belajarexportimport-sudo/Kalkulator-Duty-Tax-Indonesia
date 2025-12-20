@@ -1,0 +1,1871 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Bea Masuk - Bea Cukai Indonesia (khusus import ke Indonesia)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #d35400;
+            /* Bronze/Gold-ish Orange */
+            --highlight: #3498db;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            /* Premium Modern Font */
+            background-color: var(--bg-color);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 1100px;
+            position: relative;
+            border-top: none;
+            /* Removed accent top border as we have header block now */
+            overflow: hidden;
+            /* For header border radius */
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Compact Grid Layout */
+        .compact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .compact-section {
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #eef2f7;
+            border-radius: var(--border-radius);
+            height: fit-content;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        .compact-section:hover {
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .compact-section h3 {
+            margin-top: 0;
+            color: var(--primary);
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            width: 40%;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 58%;
+            padding: 8px 12px;
+            border: 1px solid #dfe6e9;
+            border-radius: 8px;
+            /* Softer corners */
+            font-size: 13px;
+            font-family: inherit;
+            background: #fdfdfd;
+            transition: var(--transition);
+            height: 36px;
+            /* Slightly taller for elegance */
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--highlight);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            background: #fff;
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            /* Elegant Dark Gradient */
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+        }
+
+        .btn-calculate:hover {
+            background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(44, 62, 80, 0.4);
+        }
+
+        .result-box {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-top: 15px;
+            display: none;
+            border: 1px solid #eef2f7;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            /* Soft popup feel */
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 0.95em;
+            color: #444;
+        }
+
+        .result-row span:last-child {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .result-row.total {
+            font-weight: 700;
+            font-size: 1.25em;
+            border-top: 2px solid var(--primary);
+            border-bottom: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            color: var(--primary);
+            background: #f8f9fa;
+            /* Highlight total */
+            padding: 15px;
+            border-radius: 8px;
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+
+
+        /* Search Dropdown Styles */
+        .search-results-dropdown {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            top: 100%;
+            /* Below the input */
+            left: 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 8px 8px;
+        }
+
+        .search-result-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+        }
+
+        .search-result-item:hover {
+            background-color: #f0f7fa;
+            color: var(--highlight);
+        }
+
+        /* Ensure parent table cell is relative for absolute positioning */
+        td {
+            position: relative;
+        }
+
+
+
+        #search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 0 0 8px 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .search-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f1f1;
+            font-size: 0.95em;
+            transition: background 0.2s;
+        }
+
+        .search-item:hover {
+            background-color: #f0f7fa;
+            color: var(--highlight);
+        }
+
+        .search-item strong {
+            color: var(--primary);
+        }
+
+        .loading-text {
+            text-align: center;
+            color: #95a5a6;
+            font-style: italic;
+            padding: 10px;
+        }
+
+        /* Ultra Compact adjustments */
+        /* CustomScrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #bdc3c7;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #95a5a6;
+        }
+
+        @media (max-width: 768px) {
+            .compact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .form-group label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-group input,
+            .form-group select {
+                width: 100%;
+            }
+        }
+
+        /* Mobile specific adjustments (Phone) */
+        @media (max-width: 480px) {
+            .header-block {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+                padding: 15px;
+            }
+
+            .header-block h1 {
+                text-align: center;
+                font-size: 1.25em;
+                margin-bottom: 10px;
+            }
+
+            .header-contact {
+                text-align: center;
+                margin-top: 5px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .compact-section {
+                padding: 15px;
+            }
+
+            .btn-calculate {
+                font-size: 14px;
+                padding: 12px;
+            }
+
+            /* --- Mobile Table Card View --- */
+            /* Force table to not behave like a table */
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            /* Hide table headers (but not display:none for accessibility) */
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tbody tr {
+                margin-bottom: 15px;
+                background: #fff;
+                border: 1px solid #e8e8e8;
+                border-radius: 8px;
+                padding: 15px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+                display: flex;
+                flex-wrap: wrap;
+                position: relative;
+            }
+
+            td {
+                border: none !important;
+                position: relative;
+                padding: 0 !important;
+                margin-bottom: 10px;
+            }
+
+            /* Row 1: Item Number */
+            td:nth-of-type(1) {
+                width: 100%;
+                border-bottom: 1px dashed #eee !important;
+                margin-bottom: 12px;
+                padding-bottom: 5px !important;
+                font-size: 0.85em;
+                color: #95a5a6;
+                font-weight: 600;
+                text-align: left !important;
+            }
+
+            td:nth-of-type(1)::before {
+                content: "Barang # ";
+                color: #7f8c8d;
+            }
+
+            /* Row 2: HS Code (Full Width) */
+            td:nth-of-type(2) {
+                width: 100%;
+            }
+
+            /* Row 3: BM (Left Half) */
+            td:nth-of-type(3) {
+                width: 48%;
+                margin-right: 4%;
+            }
+
+            td:nth-of-type(3)::before {
+                content: "BM (%):";
+                display: block;
+                font-size: 0.75em;
+                color: #7f8c8d;
+                margin-bottom: 3px;
+            }
+
+            /* Row 4: Nilai (Right Half) */
+            td:nth-of-type(4) {
+                width: 48%;
+            }
+
+            td:nth-of-type(4)::before {
+                content: "Nilai ($):";
+                display: block;
+                font-size: 0.75em;
+                color: #7f8c8d;
+                margin-bottom: 3px;
+            }
+
+            /* Footer adjustments */
+            tfoot tr {
+                display: flex !important;
+                flex-direction: column;
+                background: transparent !important;
+                margin-top: 10px;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+
+            tfoot td {
+                width: 100% !important;
+                text-align: right !important;
+            }
+        }
+
+        /* Custom utility classes */
+        .input-mini {
+            width: 70px !important;
+            font-weight: bold;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .btn-small {
+            display: inline-block;
+            margin-top: 8px;
+            background: var(--highlight);
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: var(--transition);
+        }
+
+        .btn-small:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .helper-text {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            font-style: italic;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .courier-label {
+            cursor: pointer;
+            font-size: 0.95em;
+            color: var(--highlight);
+            font-weight: 600;
+        }
+
+        .header-block {
+            background: linear-gradient(135deg, var(--primary) 0%, #34495e 100%);
+            margin: -25px -25px 25px -25px;
+            /* Negative margin to fill container top */
+            padding: 20px 25px;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-block h1 {
+            margin: 0;
+            color: white;
+            text-align: left;
+            font-size: 1.4em;
+        }
+
+        .header-contact {
+            text-align: right;
+            font-size: 0.85em;
+            color: #bdc3c7;
+        }
+
+        .header-contact a {
+            color: var(--highlight);
+            /* Or maybe Gold? Let's use Light Blue or White */
+            color: #fff;
+            font-weight: bold;
+            text-decoration: none;
+            border-bottom: 1px dotted rgba(255, 255, 255, 0.5);
+            transition: color 0.2s;
+        }
+
+        .header-contact a:hover {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+    </style>
+    <script src="hs_data.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- New Header Block -->
+        <div class="header-block">
+            <div>
+                <h1>Kalkulator Bea Masuk & Pajak (PDRI)</h1>
+                <span style="font-size:0.75em; font-weight:normal; opacity:0.8; display:block; margin-top:2px;">
+                    Bea Cukai Indonesia (khusus import ke Indonesia)
+                </span>
+            </div>
+
+            <div class="header-contact">
+                <a href="https://lynk.id/exportimport" target="_blank">https://lynk.id/exportimport</a><br>
+                WA: <a href="https://wa.me/6281290650963" target="_blank">081290650963</a>
+            </div>
+        </div>
+
+        <div class="compact-grid">
+            <!-- LEFT COLUMN: Barang & Nilai -->
+            <div class="compact-section">
+                <h3>1. Detail Barang & Nilai</h3>
+
+                <!-- UPDATED: Multi-row Input Table -->
+                <div style="margin-bottom: 15px; overflow-x: auto;">
+                    <table style="width:100%; border-collapse: collapse; font-size: 0.9em;">
+                        <thead>
+                            <tr style="background: #f8f9fa; text-align: left;">
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd; width: 30px;">#</th>
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd;">HS Code / Barang</th>
+                                <th style="padding: 8px; border-bottom: 2px solid #ddd; width: 60px;">BM %</th>
+                                <th id="th-val" style="padding: 8px; border-bottom: 2px solid #ddd; width: 90px;">Nilai
+                                    ($)</th>
+                                <th
+                                    style="padding: 8px; border-bottom: 2px solid #ddd; width: 40px; text-align:center;">
+                                    Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="items-body">
+                            <!-- Row 1 -->
+                            <tr id="row-1">
+                                <td style="padding: 5px; text-align: center;">1</td>
+                                <td style="padding: 5px;">
+                                    <input type="text" class="hs-input" id="hs-1" placeholder="Cari HS / Ketik..."
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px;">
+                                    <div id="res-1" class="search-results-dropdown"
+                                        style="display:none; position:absolute; background:white; z-index:99; border:1px solid #ccc; max-height:200px; overflow:auto;">
+                                    </div>
+                                    <div style="font-size: 0.7em; color: #666; margin-top: 3px;">
+                                        <em>*Untuk memastikan, jika besaran BM beda, silakan <a href="#"
+                                                onclick="checkINSW('hs-1'); return false;">[Copy HS & Cek INSW]</a></em>
+                                    </div>
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="number" class="bm-input" id="bm-1" value="0" min="0" step="0.1"
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px; text-align:center;">
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="text" class="val-input" id="val-1" placeholder="0"
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px; text-align:right;"
+                                        oninput="formatCurrencyInput(this); reCalcTotalFOB();">
+                                </td>
+                                <td style="padding: 5px; text-align:center;">
+                                    <button onclick="clearRow(1)"
+                                        style="border:none; background:none; cursor:pointer; color:#e74c3c; font-weight:bold;"
+                                        title="Hapus Data">&#10006;</button>
+                                </td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr id="row-2" style="display:none;">
+                                <td style="padding: 5px; text-align: center;">2</td>
+                                <td style="padding: 5px;">
+                                    <input type="text" class="hs-input" id="hs-2" placeholder="..."
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px;">
+                                    <div id="res-2" class="search-results-dropdown"></div>
+                                    <div style="font-size: 0.7em; color: #666; margin-top: 3px;">
+                                        <em>*Untuk memastikan, jika besaran BM beda, silakan <a href="#"
+                                                onclick="checkINSW('hs-2'); return false;">[Copy HS & Cek INSW]</a></em>
+                                    </div>
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="number" class="bm-input" id="bm-2" value="0" min="0" step="0.1"
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px; text-align:center;">
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="text" class="val-input" id="val-2" placeholder="0"
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px; text-align:right;"
+                                        oninput="formatCurrencyInput(this); reCalcTotalFOB();">
+                                </td>
+                                <td style="padding: 5px; text-align:center;">
+                                    <button onclick="deleteRow(2)"
+                                        style="border:none; background:none; cursor:pointer; color:#e74c3c; font-weight:bold;"
+                                        title="Hapus Baris">&#10006;</button>
+                                </td>
+                            </tr>
+                            <!-- Row 3 -->
+                            <tr id="row-3" style="display:none;">
+                                <td style="padding: 5px; text-align: center;">3</td>
+                                <td style="padding: 5px;">
+                                    <input type="text" class="hs-input" id="hs-3" placeholder="..."
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px;">
+                                    <div id="res-3" class="search-results-dropdown"></div>
+                                    <div style="font-size: 0.7em; color: #666; margin-top: 3px;">
+                                        <em>*Untuk memastikan, jika besaran BM beda, silakan <a href="#"
+                                                onclick="checkINSW('hs-3'); return false;">[Copy HS & Cek INSW]</a></em>
+                                    </div>
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="number" class="bm-input" id="bm-3" value="0" min="0" step="0.1"
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px; text-align:center;">
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="text" class="val-input" id="val-3" placeholder="0"
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px; text-align:right;"
+                                        oninput="formatCurrencyInput(this); reCalcTotalFOB();">
+                                </td>
+                                <td style="padding: 5px; text-align:center;">
+                                    <button onclick="deleteRow(3)"
+                                        style="border:none; background:none; cursor:pointer; color:#e74c3c; font-weight:bold;"
+                                        title="Hapus Baris">&#10006;</button>
+                                </td>
+                            </tr>
+                            <!-- Row 4 -->
+                            <tr id="row-4" style="display:none;">
+                                <td style="padding: 5px; text-align: center;">4</td>
+                                <td style="padding: 5px;">
+                                    <input type="text" class="hs-input" id="hs-4" placeholder="..."
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px;">
+                                    <div id="res-4" class="search-results-dropdown"></div>
+                                    <div style="font-size: 0.7em; color: #666; margin-top: 3px;">
+                                        <em>*Untuk memastikan, jika besaran BM beda, silakan <a href="#"
+                                                onclick="checkINSW('hs-4'); return false;">[Copy HS & Cek INSW]</a></em>
+                                    </div>
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="number" class="bm-input" id="bm-4" value="0" min="0" step="0.1"
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px; text-align:center;">
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="text" class="val-input" id="val-4" placeholder="0"
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px; text-align:right;"
+                                        oninput="formatCurrencyInput(this); reCalcTotalFOB();">
+                                </td>
+                                <td style="padding: 5px; text-align:center;">
+                                    <button onclick="deleteRow(4)"
+                                        style="border:none; background:none; cursor:pointer; color:#e74c3c; font-weight:bold;"
+                                        title="Hapus Baris">&#10006;</button>
+                                </td>
+                            </tr>
+                            <!-- Row 5 -->
+                            <tr id="row-5" style="display:none;">
+                                <td style="padding: 5px; text-align: center;">5</td>
+                                <td style="padding: 5px;">
+                                    <input type="text" class="hs-input" id="hs-5" placeholder="..."
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px;">
+                                    <div id="res-5" class="search-results-dropdown"></div>
+                                    <div style="font-size: 0.7em; color: #666; margin-top: 3px;">
+                                        <em>*Untuk memastikan, jika besaran BM beda, silakan <a href="#"
+                                                onclick="checkINSW('hs-5'); return false;">[Copy HS & Cek INSW]</a></em>
+                                    </div>
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="number" class="bm-input" id="bm-5" value="0" min="0" step="0.1"
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px; text-align:center;">
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="text" class="val-input" id="val-5" placeholder="0"
+                                        style="width:100%; border:1px solid #ddd; padding:5px; border-radius:4px; text-align:right;"
+                                        oninput="formatCurrencyInput(this); reCalcTotalFOB();">
+                                </td>
+                                <td style="padding: 5px; text-align:center;">
+                                    <button onclick="deleteRow(5)"
+                                        style="border:none; background:none; cursor:pointer; color:#e74c3c; font-weight:bold;"
+                                        title="Hapus Baris">&#10006;</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr style="background: #fdfdfd; font-weight: bold;">
+                                <td id="td-total-fob-label" colspan="3" style="padding: 8px; text-align: right;">Total
+                                    FOB ($):</td>
+                                <td style="padding: 8px; text-align: right;"><span id="total-fob-display">0</span></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <button id="btn-add-item" onclick="addItemRow()"
+                        style="margin-top:5px; background:none; border:2px dashed #bbb; color:#666; width:100%; padding:8px; cursor:pointer; font-size:0.9em; border-radius:5px;">+
+                        Tambah Item Lain (Baris)</button>
+                </div>
+
+                <div class="form-group">
+                    <label id="lbl-insurance">Asuransi $</label>
+                    <input type="text" id="val-insurance" placeholder="0"
+                        oninput="formatCurrencyInput(this); checkWarehouseDefault()">
+                </div>
+
+                <div class="form-group" style="flex-wrap: wrap;">
+                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                        <label id="lbl-freight">Ongkir (Freight) $</label>
+                        <input type="text" id="val-freight" placeholder="0"
+                            oninput="formatCurrencyInput(this); checkWarehouseDefault()" style="width:58%;">
+                    </div>
+                    <span class="helper-text" style="width:100%; margin-top:4px;">
+                        *Untuk mengetahui ongkos kirim, silakan cek ke penyedia perusahaan kurir / forwarder. <br>
+                        Apakah Anda ingin cek ongkir menggunakan UPS? <a href="#"
+                            onclick="openUpsModal(); return false;"
+                            style="color:var(--highlight); font-weight:bold;">Silakan klik di sini</a>.
+                    </span>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Pengaturan & Kurir -->
+            <div class="compact-section">
+                <h3>2. Pengaturan & Kurir</h3>
+
+                <div class="form-group">
+                    <label>Mata Uang</label>
+                    <select id="currency-select" onchange="updateCurrencyUI()">
+                        <option value="USD" selected>USD ($)</option>
+                        <option value="IDR">IDR (Rp)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="kurs-row">
+                    <label>Kurs (IDR) <span id="kurs-info"
+                            style="font-weight:normal; font-size:0.8em; color:#7f8c8d;"></span></label>
+                    <input type="text" id="kurs" value="16.500" oninput="formatCurrencyInput(this)">
+                </div>
+
+                <div class="form-group">
+                    <label>Tipe Importir</label>
+                    <select id="importer-type" onchange="updateImporterUI()">
+                        <option value="company" selected>Company</option>
+                        <option value="personal">Personal</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="justify-content: flex-end; flex-wrap: wrap;">
+                    <div style="width:58%; display:flex; align-items:center;">
+                        <input type="checkbox" id="force-mfn" style="width:auto; margin-right:8px;"
+                            onchange="calculate()">
+                        <label for="force-mfn"
+                            style="width:auto; cursor:pointer; font-weight:bold; color:#d35400; font-size:0.9em;">Hitung
+                            Tarif Normal (MFN)</label>
+                    </div>
+                    <span class="helper-text" style="width:100%; text-align:right; margin-top:2px; font-size:0.8em;">
+                        *Centang untuk abaikan Flat Rate 7.5% (gunakan tarif BM manual)
+                    </span>
+                </div>
+
+                <div class="form-group" id="company-options">
+                    <label>Status API</label>
+                    <select id="has-api">
+                        <option value="yes">Punya API (PPh 2.5%)</option>
+                        <option value="no">Tidak Punya API (PPh 7.5%)</option>
+                        <option value="npwp_only" selected>Punya NPWP (7.5%) - Umum</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="personal-options" style="display:none;">
+                    <label>Status NPWP</label>
+                    <select id="has-npwp-personal">
+                        <option value="yes" selected>Punya NPWP (PPh 7.5% - 10%)</option>
+                        <option value="no">Tidak Punya NPWP (PPh 15% - 20%)</option>
+                    </select>
+                </div>
+
+                <!-- Courier -->
+                <hr style="border: 0; border-top: 1px dashed #eee; margin: 10px 0;">
+
+                <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                    <input type="checkbox" id="show-courier-toggle" style="margin-right: 10px;"
+                        onchange="toggleCourierSection()">
+                    <label for="show-courier-toggle" class="courier-label">Hitung Biaya
+                        Kurir?</label>
+                </div>
+
+                <div id="courier-section-container"
+                    style="display: none; background: #f9f9f9; padding: 10px; border-radius: 5px; border:1px solid #eee;">
+                    <!-- Courier option hidden (Defaults to UPS) -->
+
+                    <div class="form-group">
+                        <label>Berat (Kg)</label>
+                        <input type="number" id="val-weight" placeholder="1" step="0.1" value="1">
+                    </div>
+
+                    <div class="form-group" style="flex-wrap:wrap;">
+                        <label>Lama Inap (Hari)</label>
+                        <input type="number" id="val-days" placeholder="0" min="0" value="0">
+                        <span class="helper-text" style="width:100%; margin-top:5px; font-size:0.8em; color:#7f8c8d;">
+                            *Estimasi: Proses CN 1-3 hari, PIB 2-5 hari. (Silakan edit jika ingin)
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div style="margin-top:20px; display:flex; gap:10px;">
+            <button class="btn-calculate" onclick="resetForm()" style="background:#e74c3c; width:30%;">ULANGI /
+                RESET</button>
+            <button class="btn-calculate" onclick="calculate()" style="width:70%;">HITUNG ESTIMASI BIAYA</button>
+        </div>
+
+        <div id="result" class="result-box">
+            <h3 style="margin-top:0;">Rincian Perhitungan</h3>
+            <div class="alert alert-info" id="logic-note"
+                style="font-size:0.9em; margin-bottom:10px; display:none; background:#e8f4f8; padding:10px; border-radius:5px;">
+            </div>
+
+            <div class="result-row"><span>Nilai Pabean (CIF USD):</span> <span id="res-cif-usd">$ 0</span></div>
+            <div class="result-row"><span>Nilai Pabean (CIF IDR):</span> <span id="res-cif">Rp 0</span></div>
+            <div class="result-row">
+                <span>Bea Masuk (BM):</span>
+                <span id="res-bm" class="val">Rp 0</span>
+            </div>
+            <div class="result-row">
+                <span>Nilai Impor (DPP):</span>
+                <span id="res-dpp" class="val">Rp 0</span>
+            </div>
+            <div class="result-row">
+                <span>PPN (11%):</span>
+                <span id="res-ppn" class="val">Rp 0</span>
+            </div>
+            <div class="result-row">
+                <span>PPh (Impor):</span>
+                <span id="res-pph" class="val">Rp 0</span>
+            </div>
+
+            <div id="surcharge-section"
+                style="border-top: 1px dashed #ccc; margin-top: 10px; padding-top: 10px; display:none;">
+                <div class="result-row" style="color: #d35400;">
+                    <span>Biaya Disbursement (Min 94k / 5.9%):</span>
+                    <span id="res-h-disb" class="val">Rp 0</span>
+                </div>
+                <div class="result-row" style="color: #d35400;">
+                    <span>Biaya Handling (Min 200k / 2.5%):</span>
+                    <span id="res-h-handling" class="val">Rp 0</span>
+                </div>
+                <div class="result-row" style="color: #d35400;">
+                    <span>Biaya Admin / Dokumen (Fixed):</span>
+                    <span id="res-h-doc" class="val">Rp 0</span>
+                </div>
+                <div class="result-row" style="color: #d35400;">
+                    <span>Biaya Gudang (3016/kg/hari >= 3hari):</span>
+                    <span id="res-h-warehouse" class="val">Rp 0</span>
+                </div>
+                <div class="result-row" style="color: #d35400;">
+                    <span>Biaya Non-Routine Entry:</span>
+                    <span id="res-h-nonroutine" class="val">Rp 0</span>
+                </div>
+            </div>
+
+            <div class="result-row total">
+                <span>Total Estimasi Pajak + Biaya:</span>
+                <span id="res-total">Rp 0</span>
+            </div>
+        </div>
+
+        <div
+            style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px; text-align: center; color: #95a5a6; font-size: 0.85em;">
+            <p>
+                *Angka ini hanya estimasi. Biaya handling/kurir menggunakan standar perhitungan umum. <br>
+                Silakan hubungi pihak ekspedisi terkait untuk rincian lebih lanjut.
+            </p>
+
+            <div
+                style="margin-top: 20px; display:flex; justify-content:center; gap:20px; flex-wrap:wrap; font-size: 1.1em;">
+                <a href="https://insw.go.id/pib-peb" target="_blank"
+                    style="color:#95a5a6; text-decoration:none; border-bottom:1px dashed #95a5a6; transition:color 0.2s;">
+                    &#128279; Cek PIB (masukan no AJU)
+                </a>
+                <a href="https://old.beacukai.go.id/web-apps/barangkiriman" target="_blank"
+                    style="color:#95a5a6; text-decoration:none; border-bottom:1px dashed #95a5a6; transition:color 0.2s;">
+                    &#128230; Cek Barang Kiriman (masukan no AWB)
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- UPS Integration Modal -->
+    <div id="ups-modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+        <div
+            style="background:white; padding:25px; border-radius:12px; width:90%; max-width:400px; box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+            <h3 style="margin-top:0; color:var(--primary);">Cek Estimasi Ongkir UPS (Import)</h3>
+            <p style="font-size:0.9em; color:#666; margin-bottom:20px;">
+                Hitung estimasi biaya pengiriman import dari negara asal ke Indonesia menggunakan layanan UPS Saver.
+            </p>
+
+            <div class="form-group" style="flex-direction:column; align-items:flex-start;">
+                <label style="width:100%; margin-bottom:5px;">Negara Asal (Origin)</label>
+                <select id="ups-origin" style="width:100%; height:40px;">
+                    <option value="">-- Pilih Negara --</option>
+                    <!-- Populated by JS -->
+                </select>
+            </div>
+
+            <div class="form-group" style="flex-direction:column; align-items:flex-start;">
+                <label style="width:100%; margin-bottom:5px;">Berat Paket (Kg)</label>
+                <input type="number" id="ups-weight" style="width:100%; height:40px;" placeholder="Contoh: 1.5"
+                    step="0.1">
+            </div>
+
+            <div id="ups-result-display"
+                style="margin-top:15px; padding:15px; background:#f0f7fa; border-radius:8px; display:none;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span>Base Rate:</span> <span id="ups-res-base" style="font-weight:600;"></span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span>Fuel Surcharge:</span> <span id="ups-res-fuel" style="font-weight:600;"></span>
+                </div>
+                <div
+                    style="display:flex; justify-content:space-between; border-top:1px solid #ddd; padding-top:5px; margin-top:5px;">
+                    <strong style="color:var(--primary);">Total Estimasi:</strong>
+                    <strong id="ups-res-total" style="color:var(--highlight);"></strong>
+                </div>
+            </div>
+
+            <div style="margin-top:25px; display:flex; justify-content:flex-end; gap:10px;">
+                <button onclick="closeUpsModal()"
+                    style="padding:10px 15px; background:#ecf0f1; border:none; border-radius:6px; cursor:pointer; color:#7f8c8d;">Batal</button>
+                <button onclick="calculateUpsPopup()"
+                    style="padding:10px 15px; background:var(--highlight); color:white; border:none; border-radius:6px; cursor:pointer;">Hitung
+                    & Pasang</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- DATA SOURCE LOADED HERE -->
+    <script src="rates_data.js"></script>
+    <script src="ups_lib.js"></script>
+
+    <script src="hs_data.js"></script>
+    <script src="kurs_data.js"></script>
+
+
+
+    <!-- Global Dropdown for Search Results -->
+    <div id="global-search-dropdown" class="search-results-dropdown"
+        style="display:none; position:absolute; background:white; z-index:9999; border:1px solid #ccc; max-height:200px; overflow:auto; box-shadow: 0 4px 6px rgba(0,0,0,0.15); width: auto; min-width: 300px;">
+    </div>
+
+    <script>
+        // ... existing script ...
+        let HS_DATA = [];
+
+        // --- Helper Functions ---
+
+        function resetForm() {
+            if (!confirm("Hapus semua data dan ulangi?")) return;
+            location.reload();
+        }
+
+        function addItemRow() {
+            for (let i = 2; i <= 5; i++) {
+                let row = document.getElementById(`row-${i}`);
+                if (row.style.display === 'none') {
+                    row.style.display = 'table-row';
+                    // If this is the last row, hide the button
+                    if (i === 5) {
+                        document.getElementById('btn-add-item').style.display = 'none';
+                    }
+                    return;
+                }
+            }
+        }
+
+        function parseLocaleNumber(val) {
+            if (!val) return 0;
+            return parseFloat(val.replace(/,/g, '')) || 0;
+        }
+
+        function formatCurrencyInput(input) {
+            let val = input.value;
+            val = val.replace(/[^0-9.]/g, '');
+            if (val === "") {
+                input.value = "";
+                return;
+            }
+            let parts = val.split('.');
+            let n = parts[0];
+            n = n.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            if (parts.length > 1) {
+                input.value = n + "." + parts[1].substring(0, 2);
+            } else {
+                input.value = n;
+            }
+        }
+
+        function reCalcTotalFOB() {
+            let total = 0;
+            for (let i = 1; i <= 5; i++) {
+                let valStr = document.getElementById(`val-${i}`).value;
+                total += parseLocaleNumber(valStr);
+            }
+            // Update display
+            document.getElementById('total-fob-display').innerText = total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+            // Trigger auto insurance calc
+            autoCalculateInsurance(total);
+            checkWarehouseDefault(total);
+        }
+
+        function clearRow(id) {
+            document.getElementById(`hs-${id}`).value = "";
+            document.getElementById(`bm-${id}`).value = "0";
+            document.getElementById(`val-${id}`).value = "";
+            reCalcTotalFOB();
+        }
+
+        function deleteRow(id) {
+            clearRow(id);
+            // Hide the row
+            document.getElementById(`row-${id}`).style.display = 'none';
+            // Show "Add Item" button if it was hidden
+            document.getElementById('btn-add-item').style.display = 'inline-block';
+            // Decrement visible rows counter if we want to track it strictly?
+            // Actually visibleRows is just a counter for adding. 
+            // If we delete row 5, visibleRows should be decremented or we just check validity.
+            // Simplified: Just hide. Add Item logic checks display:none.
+            visibleRows--;
+            if (visibleRows < 1) visibleRows = 1;
+        }
+
+        function autoCalculateInsurance(totalFob) {
+            // Default 0.5% of FOB
+            // Only calculate if empty or auto
+            // Actually, let's keep it simple: just update logic if user wants default.
+            // Current requirement: "Insurance is editable auto-calculated field (0.5% of cost)"
+
+            // We only auto-fill if the user hasn't manually typed a "custom" overwriting value? 
+            // Or just auto-fill on input? The previous code auto-filled on input.
+            // Let's stick to that but be careful not to annoy user.
+            // Ideally check if "val-insurance" is empty or we are in a fresh state. 
+            // For now, I'll calculate it but maybe we should allow manual override easily.
+
+            let insInput = document.getElementById('val-insurance');
+            // Simple logic: update it. User can change it after.
+            let insVal = totalFob * 0.005;
+            // Format to 2 decimals
+            // However, if user is typing value manually, this might conflict.
+            // Better: Only update if the field is not focused? 
+            if (document.activeElement !== insInput) {
+                insInput.value = insVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+            }
+        }
+
+        function checkWarehouseDefault(totalFob) {
+            let daysInput = document.getElementById('val-days');
+            if (document.activeElement === daysInput) return;
+
+            // Allow calling without arg
+            if (totalFob === undefined) {
+                let totalStr = document.getElementById('total-fob-display').innerText;
+                totalFob = parseLocaleNumber(totalStr);
+            }
+
+            // Check currency
+            let currency = document.getElementById('currency-select').value;
+            let valToCheck = totalFob;
+
+            if (currency === 'IDR') {
+                let kurs = parseLocaleNumber(document.getElementById('kurs').value) || 16500;
+                valToCheck = totalFob / kurs;
+            }
+
+            if (valToCheck > 1500) {
+                daysInput.value = 5;
+            } else {
+                daysInput.value = 3;
+            }
+        }
+
+        function updateImporterUI() {
+            const type = document.getElementById('importer-type').value;
+            if (type === 'personal') {
+                document.getElementById('company-options').style.display = 'none';
+                document.getElementById('personal-options').style.display = 'flex';
+            } else {
+                document.getElementById('company-options').style.display = 'flex';
+                document.getElementById('personal-options').style.display = 'none';
+            }
+        }
+
+        function updateCurrencyUI() {
+            const currency = document.getElementById('currency-select').value;
+            const kursRow = document.getElementById('kurs-row');
+            const kurs = parseLocaleNumber(document.getElementById('kurs').value) || 16500;
+
+            // Update Headers/Labels
+            const suffix = (currency === 'IDR') ? 'Rp' : '$';
+            document.getElementById('th-val').innerText = `Nilai (${suffix})`;
+            document.getElementById('td-total-fob-label').innerText = `Total FOB (${suffix}):`;
+            document.getElementById('lbl-freight').innerText = `Freight (Ongkir) ${suffix}`;
+
+            const insLabel = document.getElementById('lbl-insurance');
+            insLabel.innerHTML = `Insurance (Asuransi) ${suffix} <br><small style="color:#888;">Default: 0.5% (Bisa diedit manual)</small>`;
+
+            if (currency === 'IDR') {
+                kursRow.style.display = 'none';
+            } else {
+                kursRow.style.display = 'flex';
+            }
+
+            // --- CONVERSION LOGIC ---
+
+            // 1. General Manual Input Conversion (Items + Insurance)
+            if (window.lastCurrency && window.lastCurrency !== currency) {
+                const factor = (currency === 'IDR') ? kurs : (1 / kurs);
+
+                // Convert these always
+                ['val-insurance', 'val-1', 'val-2', 'val-3', 'val-4', 'val-5'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    const val = parseLocaleNumber(el.value);
+                    if (val > 0) {
+                        if (currency === 'IDR') {
+                            el.value = Math.round(val * factor);
+                        } else {
+                            el.value = (val * factor).toFixed(2);
+                        }
+                        formatCurrencyInput(el);
+                    }
+                });
+
+                // Convert Freight ONLY if UPS is NOT active (otherwise UPS logic handles it below)
+                if (typeof window.upsFreightIDR === 'undefined' || window.upsFreightIDR <= 0) {
+                    const el = document.getElementById('val-freight');
+                    const val = parseLocaleNumber(el.value);
+                    if (val > 0) {
+                        if (currency === 'IDR') {
+                            el.value = Math.round(val * factor);
+                        } else {
+                            el.value = (val * factor).toFixed(2);
+                        }
+                        formatCurrencyInput(el);
+                    }
+                }
+            }
+
+            // 2. UPS Freight Override (Source of Truth)
+            if (typeof window.upsFreightIDR !== 'undefined' && window.upsFreightIDR > 0) {
+                const frInput = document.getElementById('val-freight');
+                if (currency === 'USD') {
+                    // Always derive from Source Truth (IDR)
+                    frInput.value = (window.upsFreightIDR / kurs).toFixed(2);
+                } else {
+                    frInput.value = Math.round(window.upsFreightIDR);
+                }
+                formatCurrencyInput(frInput);
+            }
+
+            // Update State
+            window.lastCurrency = currency;
+
+            // Re-trigger visual updates (Insurance auto-calc usually depends on FOB, 
+            // but if we converted FOB inputs we'd trigger that too. 
+            // For now, we only converted Freight/Insurance fields. Items (val-1..) are left as is 
+            // because users might get confused if their invoice values change.)
+        }
+
+        function toggleCourierSection() {
+            const isChecked = document.getElementById('show-courier-toggle').checked;
+            const container = document.getElementById('courier-section-container');
+
+            if (isChecked) {
+                container.style.display = 'block';
+                checkWarehouseDefault();
+            } else {
+                container.style.display = 'none';
+                document.getElementById('val-weight').value = "";
+                document.getElementById('val-days').value = "";
+            }
+        }
+
+
+        // --- HS Search Logic (Per Row) ---
+
+        // Load data once
+        // window.HS_DATA_SOURCE is from hs_data.js. 
+        // We can just use it directly.
+
+        function handleHSSearch(input, rowId) {
+            const query = input.value.toLowerCase();
+            const resultsDiv = document.getElementById(`res-${rowId}`);
+            resultsDiv.innerHTML = '';
+
+            if (query.length < 2) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            // Filter
+            const matches = window.HS_DATA_SOURCE.filter(item =>
+                item.hs.toLowerCase().includes(query) ||
+                (item.desc && item.desc.toLowerCase().includes(query))
+            ).slice(0, 10); // Limit 10
+
+            if (matches.length > 0) {
+                resultsDiv.style.display = 'block';
+                matches.forEach(item => {
+                    const div = document.createElement('div');
+                    div.style.padding = '8px';
+                    div.style.borderBottom = '1px solid #eee';
+                    div.style.cursor = 'pointer';
+                    div.style.background = '#fff';
+                    div.innerHTML = `<strong>${item.hs}</strong> - ${item.desc.substring(0, 50)}... <span style="color:var(--accent); float:right;">BM: ${item.bm}%</span>`;
+
+                    div.onclick = () => {
+                        // Fill Input
+                        input.value = `${item.hs} - ${item.desc.substring(0, 20)}`;
+                        // Fill BM
+                        document.getElementById(`bm-${rowId}`).value = item.bm;
+                        resultsDiv.style.display = 'none';
+                    };
+
+                    div.onmouseover = () => { div.style.background = '#f0f7fa'; };
+                    div.onmouseout = () => { div.style.background = '#fff'; };
+
+                    resultsDiv.appendChild(div);
+                });
+            } else {
+                resultsDiv.style.display = 'none';
+            }
+        }
+
+        // Hide dropdowns when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.matches('.hs-input')) {
+                document.querySelectorAll('.search-results-dropdown').forEach(el => el.style.display = 'none');
+            }
+        });
+
+
+        // --- MAIN CALCULATION ---
+
+        // Helper to check MFN Exceptions (PMK 96/2023 & PMK 199/2019)
+        // These items are EXCLUDED from the 7.5% Flat Rate and must use MFN (Normal) Rates
+        function isMfnException(hsCode) {
+            if (!hsCode) return false;
+            // Remove dots and generic chars
+            const clean = hsCode.replace(/\D/g, '');
+
+            // 1. Tas, Koper, dsb (4202)
+            if (clean.startsWith('4202')) return true;
+
+            // 2. Tekstil & Produk Tekstil (Bab 50 - 63)
+            // Range check for 2-digit prefixes
+            const prefix2 = parseInt(clean.substring(0, 2));
+            if (prefix2 >= 50 && prefix2 <= 63) return true;
+
+            // 3. Alas Kaki / Sepatu (Bab 64)
+            if (clean.startsWith('64')) return true;
+
+            // 4. Buku (Bab 49)
+            // Note: PMK 96 explicitly lists books as exception to 7.5%
+            // Usually books are BM 0%, but they fall under MFN regime, not Flat 7.5%.
+            if (clean.startsWith('49')) return true;
+
+            // 5. Sepeda (8712)
+            // Specifically 8712 (Bicycles)
+            if (clean.startsWith('8712')) return true;
+
+            // 6. Jam Tangan (9101, 9102)
+            if (clean.startsWith('9101') || clean.startsWith('9102')) return true;
+
+            // 7. Besi & Baja (Bab 72, 73)
+            // Often included in exceptions for safeguard measures, though PMK 96 strict list focuses on the above.
+            // Keeping it safe as per common practice for "Iron/Steel" exceptions.
+            if (clean.startsWith('72') || clean.startsWith('73')) return true;
+
+            // 8. Kosmetik (3303, 3304)
+            // Check specific subheadings if needed, but 3303/3304 are the main ones.
+            if (clean.startsWith('3303') || clean.startsWith('3304')) return true;
+
+            return false;
+        }
+
+        // --- MAIN CALCULATION (PMK 96/2023) ---
+        function calculate() {
+            // 1. Get Settings & Rates
+            let insuranceInput = parseLocaleNumber(document.getElementById('val-insurance').value);
+            let freightInput = parseLocaleNumber(document.getElementById('val-freight').value);
+            let currency = document.getElementById('currency-select').value;
+            let kurs = parseLocaleNumber(document.getElementById('kurs').value) || 16500; // Prevent div by zero
+
+            // 2. Parse Items & Normalize to USD
+            let totalFobUsd = 0;
+            let items = [];
+
+            for (let i = 1; i <= 5; i++) {
+                let valStr = document.getElementById(`val-${i}`).value;
+                let bmStr = document.getElementById(`bm-${i}`).value;
+                let hsStr = document.getElementById(`hs-${i}`).value;
+
+                let val = parseLocaleNumber(valStr);
+                let bmRate = parseFloat(bmStr) || 0;
+
+                if (val > 0 || hsStr.trim() !== '') {
+                    if (val > 0) {
+                        let hsClean = (hsStr) ? hsStr.trim() : "";
+
+                        // CONVERSION LOGIC
+                        let itemFobUsd = 0;
+                        if (currency === 'IDR') {
+                            itemFobUsd = val / kurs;
+                        } else {
+                            itemFobUsd = val;
+                        }
+
+                        items.push({
+                            id: i,
+                            fobUsd: itemFobUsd, // Normalized Value
+                            bmRate: bmRate,
+                            hs: hsClean
+                        });
+                        totalFobUsd += itemFobUsd;
+                    }
+                }
+            }
+
+            if (totalFobUsd === 0) {
+                alert("Mohon masukkan data barang (Nilai $) minimal satu baris.");
+                return;
+            }
+
+            // Normalize Freight & Insurance to USD
+            let insuranceUsd = (currency === 'IDR') ? (insuranceInput / kurs) : insuranceInput;
+            let freightUsd = (currency === 'IDR') ? (freightInput / kurs) : freightInput;
+
+            // 3. Determine Thresholds (Based on USD)
+            // PMK 96 Limits are in USD (FOB $3, CIF $1500)
+            let totalCifUsd = totalFobUsd + insuranceUsd + freightUsd;
+
+            // Check Force MFN
+            let forceMfn = document.getElementById('force-mfn').checked;
+
+            let isDeMinimis = (totalFobUsd <= 3);
+            let isFlatRateRange = (!isDeMinimis && totalCifUsd <= 1500);
+
+            if (forceMfn) {
+                // Bypass CN Rules
+                isDeMinimis = false;
+                isFlatRateRange = false;
+            }
+
+            // PPh Rate Setup
+            let pphRateNormal = 0;
+            let importerType = document.getElementById('importer-type').value;
+
+            if (importerType === 'company') {
+                let apiStatus = document.getElementById('has-api').value;
+                pphRateNormal = (apiStatus === 'yes') ? 0.025 : 0.075;
+            } else {
+                let npwpStatus = document.getElementById('has-npwp-personal').value;
+                pphRateNormal = (npwpStatus === 'yes') ? 0.075 : 0.150;
+            }
+
+            // 4. Calculate Duties Per Item (Prorated)
+            let totalBmRaw = 0;
+            let totalPphRaw = 0;
+            let totalDppRaw = 0; // Total Nilai Impor
+
+            // Logic Note Builder
+            let logicHtml = `<strong>Logika Perhitungan (PMK 96/2023):</strong><br>`;
+            logicHtml += `<div style="margin-bottom:5px; font-size:0.85em; color:#555;">
+                Total FOB: $${totalFobUsd.toLocaleString('en-US', { maximumFractionDigits: 2 })} | 
+                CIF: $${totalCifUsd.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+            </div>`;
+
+            items.forEach(item => {
+                // A. Proration (by Value/FOB)
+                let weightProportion = item.fobUsd / totalFobUsd;
+
+                let itemFreightUsd = freightUsd * weightProportion;
+                let itemInsUsd = insuranceUsd * weightProportion;
+                let itemCifUsd = item.fobUsd + itemFreightUsd + itemInsUsd;
+
+                // Base for Duty is CIF in IDR
+                let itemCifIdr = itemCifUsd * kurs;
+
+                // B. Determine Rates
+                let appliedBmRate = 0;
+                let appliedPphRate = 0;
+                let logicNote = "";
+                let itemColor = "";
+
+                if (isDeMinimis) {
+                    appliedBmRate = 0;
+                    appliedPphRate = 0;
+                    logicNote = "De Minimis";
+                    itemColor = "#27ae60";
+                }
+                else if (isFlatRateRange) {
+                    if (isMfnException(item.hs)) {
+                        appliedBmRate = item.bmRate;
+                        appliedPphRate = pphRateNormal;
+                        logicNote = "Pengecualian (MFN Rate)";
+                        itemColor = "#c0392b";
+                    } else {
+                        appliedBmRate = 7.5;
+                        appliedPphRate = 0;
+                        logicNote = "Flat Rate 7.5%";
+                        itemColor = "#f39c12";
+                    }
+                }
+                else {
+                    // Normal (>1500)
+                    appliedBmRate = item.bmRate;
+                    appliedPphRate = pphRateNormal;
+                    logicNote = "Normal (CIF > 1500)";
+                    itemColor = "#2980b9";
+                }
+
+                // C. Calculate Item Duties
+                let itemBm = Math.ceil(itemCifIdr * (appliedBmRate / 100));
+                let itemDpp = itemCifIdr + itemBm;
+                let itemPph = Math.ceil(itemDpp * appliedPphRate);
+
+                // Accumulate
+                totalBmRaw += itemBm;
+                totalPphRaw += itemPph;
+                totalDppRaw += itemDpp;
+
+                // Add to Logic Log
+                logicHtml += `<div style="font-size:0.85em; border-bottom:1px dashed #eee; padding:4px 0;">
+                    <span style="font-weight:bold; color:${itemColor};">Item #${item.id}</span> [${item.hs || '?'}] 
+                    (FOB $${item.fobUsd.toFixed(2)}) &rarr; <span style="font-style:italic;">${logicNote}</span><br>
+                    CIF: Rp ${itemCifIdr.toLocaleString('id-ID')} | BM: ${Math.round(appliedBmRate)}% | PPh: ${(appliedPphRate * 100).toFixed(1)}%
+                </div>`;
+            });
+
+            // 5. PPN Calculation (11% of Total DPP)
+            let ppn = Math.ceil(totalDppRaw * 0.11);
+
+            // 6. Update UI Results
+            document.getElementById('result').style.display = 'block';
+
+            const fmt = (n) => "Rp " + n.toLocaleString('id-ID', { maximumFractionDigits: 0 });
+            const fmtUsd = (n) => "$ " + n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+            document.getElementById('res-cif-usd').innerText = fmtUsd(totalCifUsd);
+            document.getElementById('res-cif').innerText = fmt(totalCifUsd * kurs);
+            document.getElementById('res-bm').innerText = fmt(totalBmRaw);
+            document.getElementById('res-dpp').innerText = fmt(totalDppRaw);
+            document.getElementById('res-ppn').innerText = fmt(ppn);
+            document.getElementById('res-pph').innerText = fmt(totalPphRaw);
+
+            // Courier Handling Fees
+            let courierTotal = 0;
+            if (document.getElementById('courier-section-container').style.display !== 'none') {
+                let taxes = totalBmRaw + ppn + totalPphRaw;
+                let handling = Math.max(200000, Math.ceil(taxes * 0.025));
+                document.getElementById('res-h-handling').innerText = fmt(handling);
+
+                let disbursement = Math.max(94159, Math.ceil(taxes * 0.059));
+                document.getElementById('res-h-disb').innerText = fmt(disbursement);
+
+                let adminDoc = 50000;
+                document.getElementById('res-h-doc').innerText = fmt(adminDoc);
+
+                let warehouse = 0;
+                let weight = parseFloat(document.getElementById('val-weight').value) || 1;
+                let days = parseFloat(document.getElementById('val-days').value) || 0;
+                if (days >= 3) {
+                    warehouse = Math.ceil(3016 * weight * days);
+                }
+                document.getElementById('res-h-warehouse').innerText = fmt(warehouse);
+
+                let nonRoutine = 0;
+                document.getElementById('res-h-nonroutine').innerText = fmt(nonRoutine);
+
+                courierTotal = handling + disbursement + adminDoc + warehouse + nonRoutine;
+                document.getElementById('surcharge-section').style.display = 'block';
+            } else {
+                document.getElementById('surcharge-section').style.display = 'none';
+            }
+
+            document.getElementById('res-total').innerText = fmt(totalBmRaw + ppn + totalPphRaw + courierTotal);
+
+            // Logic Note Footer
+            logicHtml += `<div style="margin-top:10px; padding:5px; background:#f0f7fa; font-size:0.8em; color:#666;">
+                <em>*Kurs: Rp ${kurs.toLocaleString()}/USD. <br>
+                ${(currency === 'IDR') ? '*Input dalam IDR dikonversi ke USD untuk pengecekan batas (Threshold).' : '*Input dalam USD.'}
+                </em>
+            </div>`;
+
+            document.getElementById('logic-note').innerHTML = logicHtml;
+            document.getElementById('logic-note').style.display = 'block';
+        }
+
+
+        // --- UPS INTEGRATION START ---
+
+        function openUpsModal() {
+            // Initialize Rates if needed
+            if (Object.keys(UPS_RATES_PARSED.import.saver).length === 0) {
+                initUpsRates();
+            }
+
+            // Populate Country Dropdown
+            const select = document.getElementById('ups-origin');
+            if (select.options.length <= 1) {
+                const countries = Object.keys(COUNTRY_SERVICE_ZONES).sort();
+                countries.forEach(c => {
+                    // Title Case
+                    const label = c.replace(/\b\w/g, l => l.toUpperCase());
+                    const option = document.createElement('option');
+                    option.value = c;
+                    option.text = label;
+                    select.appendChild(option);
+                });
+            }
+
+            // Auto-fill weight from main form if present
+            const weightVal = document.getElementById('val-weight').value;
+            if (weightVal) document.getElementById('ups-weight').value = weightVal;
+            else if (!document.getElementById('ups-weight').value) document.getElementById('ups-weight').value = 1;
+
+            document.getElementById('ups-modal').style.display = 'flex';
+            document.getElementById('ups-result-display').style.display = 'none';
+        }
+
+        function closeUpsModal() {
+            document.getElementById('ups-modal').style.display = 'none';
+        }
+
+        function calculateUpsPopup() {
+            const origin = document.getElementById('ups-origin').value;
+            const weight = parseFloat(document.getElementById('ups-weight').value) || 0;
+
+            if (!origin || weight <= 0) {
+                alert("Mohon pilih negara dan masukkan berat paket.");
+                return;
+            }
+
+            const result = calculateUPSImportRate(origin, weight);
+
+            if (result.error) {
+                alert("Error: " + result.error);
+                return;
+            }
+
+            // USER REQUEST: Apply 50% Discount because full rate is too high
+            result.total = result.total * 0.5;
+            // ------------------------------------------------------------
+
+            // 1. Save the IDR Value as Source of Truth
+            window.upsFreightIDR = result.total;
+
+            // 2. Format for display (Popup)
+            const format = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(n);
+
+            document.getElementById('ups-res-base').innerText = format(result.baseRate);
+            document.getElementById('ups-res-fuel').innerText = format(result.fuel);
+            document.getElementById('ups-res-total').innerText = format(result.total);
+
+            document.getElementById('ups-result-display').style.display = 'block';
+
+            // 3. Auto Update Main Form
+            // Check current currency mode
+            const currencyMain = document.getElementById('currency-select').value;
+            const kurs = parseLocaleNumber(document.getElementById('kurs').value) || 16500;
+
+            if (currencyMain === 'USD') {
+                const freightInUsd = result.total / kurs;
+                document.getElementById('val-freight').value = freightInUsd.toLocaleString('en-US', { maximumFractionDigits: 2 });
+            } else {
+                document.getElementById('val-freight').value = Math.round(result.total).toLocaleString('id-ID'); // IDR
+            }
+
+            // Sync Weight to Main Form
+            document.getElementById('val-weight').value = weight;
+
+            // Close Modal
+            closeUpsModal();
+
+            // Trigger auto calculations
+            let currentFob = parseLocaleNumber(document.getElementById('total-fob-display').innerText); // we use display val? No, recal it.
+            reCalcTotalFOB();
+        }
+
+        // Initialize display
+
+        // --- HS CODE AUTOCOMPLETE LOGIC ---
+
+        // Track visible rows
+        let visibleRows = 1;
+
+        function addItemRow() {
+            if (visibleRows < 5) {
+                visibleRows++;
+                const row = document.getElementById(`row-${visibleRows}`);
+                if (row) {
+                    row.style.display = 'table-row';
+                    // Ensure listeners are active (they should be from onload)
+                }
+            } else {
+                alert("Maksimal 5 baris item untuk saat ini.");
+            }
+        }
+
+        function setupRowListeners() {
+            const inputs = document.querySelectorAll('.hs-input');
+
+            // Global Dropdown Setup (Ensure unique attachment)
+            const gd = document.getElementById('global-search-dropdown');
+            if (gd && !gd.dataset.listenerAttached) {
+                gd.dataset.listenerAttached = 'true';
+                // Initialize state
+                window.isDropdownHovered = false;
+
+                gd.onmouseenter = () => window.isDropdownHovered = true;
+                gd.onmouseleave = () => window.isDropdownHovered = false;
+
+                // CRITICAL: Prevent input blur when clicking anywhere in dropdown
+                gd.onmousedown = (e) => {
+                    e.preventDefault();
+                };
+            }
+
+
+            inputs.forEach(input => {
+                // Remove old listeners to avoid duplicates if called multiple times
+                // We'll use a property to mark attached listeners
+                if (input.dataset.hasListener) return;
+                input.dataset.hasListener = 'true';
+
+                input.addEventListener('blur', function (e) {
+                    const hsStr = this.value;
+                    if (hsStr.trim() !== '') {
+                        const hsClean = hsStr.replace(/\D/g, '');
+                        if (hsClean.length < 8) {
+                            alert(`Pastikan HS Code 8 digit angka.`);
+                            // Optional: Focus back? this.focus(); // Can be annoying
+                        }
+                    }
+                });
+
+                input.addEventListener('input', function (e) {
+                    // console.log('HS Input Event detected:', this.value); 
+                    const val = this.value.toLowerCase();
+                    const globalDropdown = document.getElementById('global-search-dropdown');
+
+                    if (val.length < 2) {
+                        globalDropdown.style.display = 'none';
+                        return;
+                    }
+
+                    // SEARCH
+                    const matches = HS_DATA.filter(item =>
+                        item.hs.toLowerCase().includes(val) ||
+                        (item.desc && item.desc.toLowerCase().includes(val))
+                    ).slice(0, 20);
+
+                    globalDropdown.innerHTML = '';
+                    if (matches.length > 0) {
+                        matches.forEach(m => {
+                            const div = document.createElement('div');
+                            div.className = 'search-result-item';
+                            div.innerHTML = `<strong>${m.hs}</strong> - ${m.desc || ''} <span style="float:right; color:purple;">BM: ${m.bm}%</span>`;
+                            div.style.padding = "8px";
+                            div.style.cursor = "pointer";
+                            div.style.borderBottom = "1px solid #eee";
+                            div.style.fontSize = "13px"; // Slightly smaller for dense list
+
+                            div.onmouseover = function () { this.style.backgroundColor = "#f0f0f0"; };
+                            div.onmouseout = function () { this.style.backgroundColor = "white"; };
+
+                            // Click is safe now because container prevents blur
+                            div.onclick = function (e) {
+                                // FILL INPUT
+                                input.value = `${m.hs} - ${m.desc}`;
+                                // FILL RATE
+                                const idNum = input.id.split('-')[1];
+                                const bmInput = document.getElementById(`bm-${idNum}`);
+                                if (bmInput) {
+                                    bmInput.value = m.bm;
+                                }
+                                globalDropdown.style.display = 'none';
+                                reCalcTotalFOB();
+                            };
+                            globalDropdown.appendChild(div);
+                        });
+
+                        // POSITIONING
+                        const rect = this.getBoundingClientRect();
+                        globalDropdown.style.display = 'block';
+                        globalDropdown.style.top = (rect.bottom + window.scrollY) + "px";
+                        globalDropdown.style.left = (rect.left + window.scrollX) + "px";
+                        globalDropdown.style.minWidth = Math.max(rect.width, 300) + "px"; // Min 300px width
+
+                    } else {
+                        globalDropdown.style.display = 'none';
+                    }
+                });
+
+                input.addEventListener('blur', function () {
+                    // Check if interacting with dropdown
+                    if (window.isDropdownHovered) return;
+
+                    setTimeout(() => {
+                        const hsStr = this.value;
+                        if (hsStr.trim() !== '') {
+                            const hsClean = hsStr.replace(/\D/g, '');
+                            if (hsClean.length < 8) {
+                                alert(`Barang #${input.id.split('-')[1]}: Pastikan HS Code 8 digit angka.`);
+                            }
+                        }
+
+                        const globalDropdown = document.getElementById('global-search-dropdown');
+                        if (globalDropdown) globalDropdown.style.display = 'none';
+                    }, 200);
+                });
+            });
+
+            // Global hide on scroll
+            window.addEventListener('scroll', () => {
+                const gd = document.getElementById('global-search-dropdown');
+                if (gd && gd.style.display !== 'none') gd.style.display = 'none';
+            }, { passive: true });
+
+            // Global hide on resize
+            window.addEventListener('resize', () => {
+                const gd = document.getElementById('global-search-dropdown');
+                if (gd) gd.style.display = 'none';
+            }, { passive: true });
+
+        }
+
+
+
+
+
+        function copyHS(id) {
+            const input = document.getElementById(id);
+            if (input && input.value) {
+                // Extract just the HS part if formatted "HS - Desc"
+                // User said "copy hscode", usually 8 digits.
+                // Our format: "1234.56.78 - Description"
+                // Let's try to copy just the code if it matches pattern, or full text?
+                // User: "cek hs code terlebih dahulu" -> likely needs the numeric code.
+                let textToCopy = input.value;
+                const parts = textToCopy.split(' - ');
+                if (parts.length > 1) {
+                    textToCopy = parts[0]; // Take the code part
+                }
+
+                // Remove dots for INSW
+                textToCopy = textToCopy.replace(/\./g, '');
+
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    // Feedback? Tiny tooltip or just alert? Alert is annoying.
+                    // Change link text temporarily?
+                    // const link = event.target; // hard to get reference easily without passing 'this'
+                    // For now, silent or console.
+                    console.log("Copied:", textToCopy);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    // Fallback
+                    input.select();
+                    document.execCommand('copy');
+                });
+            } else {
+                alert("HS Code kosong!");
+            }
+        }
+
+
+        function checkINSW(id) {
+            const input = document.getElementById(id);
+            if (input && input.value) {
+                // 1. Prepare Text
+                let textToCopy = input.value;
+                const parts = textToCopy.split(' - ');
+                if (parts.length > 1) {
+                    textToCopy = parts[0];
+                }
+                textToCopy = textToCopy.replace(/\./g, '');
+
+                // 2. Copy to Clipboard
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    console.log("Copied for INSW:", textToCopy);
+                    // 3. Open INSW
+                    window.open('https://insw.go.id/intr', '_blank');
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    // Fallback copy
+                    input.select();
+                    document.execCommand('copy');
+                    // Still open
+                    window.open('https://insw.go.id/intr', '_blank');
+                });
+            } else {
+                // Just open if empty
+                window.open('https://insw.go.id/intr', '_blank');
+            }
+        }
+
+        // --- INIT ---
+        window.onload = function () {
+            // Load HS Data Check
+            if (typeof window.HS_DATA_SOURCE !== 'undefined') {
+                HS_DATA = window.HS_DATA_SOURCE;
+                // Optional: Hint in first row
+                document.getElementById('hs-1').placeholder = `Cari dari ${HS_DATA.length.toLocaleString('id-ID')} Data HS...`;
+            } else {
+                console.error("HS Data not loaded!");
+            }
+
+            // Load Kurs Data
+            if (typeof window.KURS_DATA !== 'undefined') {
+                const kData = window.KURS_DATA;
+                if (kData.rate) {
+                    document.getElementById('kurs').value = kData.rate;
+                }
+                if (kData.date) {
+                    document.getElementById('kurs-info').innerHTML = `
+                        <small style="color:#27ae60; font-weight:bold;">(Update: ${kData.date})</small> 
+                    `;
+                }
+            }
+
+            // Initial Calc
+            updateImporterUI();
+            updateCurrencyUI();
+            setupRowListeners();
+            reCalcTotalFOB();
+        };
+
+    </script>
+</body>
+
+</html>
